@@ -22,6 +22,7 @@ type Chat interface {
 	GetAll(ctx context.Context, limit, offset int) ([]*models.Chat, error)
 	Update(ctx context.Context, chat *models.Chat) error
 	Delete(ctx context.Context, id int) error
+	ChatExists(ctx context.Context, title string) (bool, error)
 }
 
 type Repository struct {

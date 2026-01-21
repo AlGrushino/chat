@@ -1,8 +1,12 @@
 package main
 
 import (
+	"chat/internal/handlers"
 	"chat/internal/repository"
+	"chat/internal/service"
 	"chat/pkg/db"
+	"flag"
+	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -10,21 +14,23 @@ import (
 )
 
 func main() {
+	migrateOnly := flag.Bool("migrate", false, "Run migrations only and exit")
+	flag.Parse()
+
 	log := logrus.New()
 	log.SetFormatter(&logrus.JSONFormatter{})
 
-	logFile, err := os.OpenFile("../logs/app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	logFile, err := os.OpenFile("logs/app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Failed to open log file:", err)
 	}
 	defer logFile.Close()
-
 	log.SetOutput(logFile)
 
-	log.Info("Loading .env")
-	err = godotenv.Load("../.env")
-	if err != nil {
-		log.Fatal(err)
+	log.Info("Starting chat application")
+
+	if err := godotenv.Load(".env"); err != nil {
+		log.Warn("No .env file found, using environment variables")
 	}
 
 	cfg := db.GetConfig(log)
@@ -40,17 +46,25 @@ func main() {
 	}
 	defer sqlDB.Close()
 
-	log.Info("Running database migrations...")
-	if err := db.RunMigrations(log, sqlDB); err != nil {
-		log.Fatal("Migrations failed:", err)
+	if *migrateOnly {
+		log.Info("Running migrations only mode")
+		if err := db.RunMigrations(log, sqlDB); err != nil {
+			log.Fatal("Migrations failed:", err)
+		}
+		log.Info("Migrations completed successfully, exiting")
+		return
 	}
-	log.Info("Migrations completed successfully")
 
 	repo := repository.NewRepository(gormDB)
-	log.Info("Creating repository")
-	if err != nil {
-		log.Fatalf("Failed to create repository:", err)
-	}
+	svc := service.NewService(log, repo)
+	handler := handlers.NewHandler(svc, log)
 
-	log.Info("Application started successfully")
+	handler.InitRoutes()
+
+	addr := ":8080"
+	log.WithField("address", addr).Info("Server starting")
+
+	if err := http.ListenAndServe(addr, handler.GetMux()); err != nil {
+		log.Fatal("Server failed:", err)
+	}
 }

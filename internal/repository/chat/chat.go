@@ -30,6 +30,17 @@ func (r *ChatRepository) GetByID(ctx context.Context, id int) (*models.Chat, err
 	return &chat, nil
 }
 
+func (r *ChatRepository) ChatExists(ctx context.Context, title string) (bool, error) {
+	var count int64
+
+	err := r.db.WithContext(ctx).
+		Model(&models.Chat{}).
+		Where("title = ?", title).
+		Count(&count).Error
+
+	return count > 0, err
+}
+
 func (r *ChatRepository) GetAll(ctx context.Context, limit, offset int) ([]*models.Chat, error) {
 	var chats []*models.Chat
 	err := r.db.WithContext(ctx).
