@@ -5,9 +5,13 @@ import (
 	"chat/internal/repository"
 	"chat/internal/service"
 	"chat/pkg/db"
+	"context"
 	"flag"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
@@ -38,13 +42,23 @@ func main() {
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
-	defer db.Close(gormDB)
+	defer func() {
+		log.Info("Closing database connection...")
+		if err := db.Close(gormDB); err != nil {
+			log.Errorf("Error closing database: %v", err)
+		}
+	}()
 
 	sqlDB, err := gormDB.DB()
 	if err != nil {
 		log.Fatal("Failed to get sql.DB:", err)
 	}
-	defer sqlDB.Close()
+	defer func() {
+		log.Info("Closing SQL connection...")
+		if err := sqlDB.Close(); err != nil {
+			log.Errorf("Error closing SQL connection: %v", err)
+		}
+	}()
 
 	if *migrateOnly {
 		log.Info("Running migrations only mode")
@@ -61,10 +75,47 @@ func main() {
 
 	handler.InitRoutes()
 
-	addr := ":8080"
-	log.WithField("address", addr).Info("Server starting")
-
-	if err := http.ListenAndServe(addr, handler.GetMux()); err != nil {
-		log.Fatal("Server failed:", err)
+	server := &http.Server{
+		Addr:         ":8080",
+		Handler:      handler.GetMux(),
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 15 * time.Second,
+		IdleTimeout:  60 * time.Second,
 	}
+
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+
+	go func() {
+		log.WithFields(logrus.Fields{
+			"address":       server.Addr,
+			"read_timeout":  server.ReadTimeout,
+			"write_timeout": server.WriteTimeout,
+			"idle_timeout":  server.IdleTimeout,
+		}).Info("HTTP server starting")
+
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Server failed to start: %v", err)
+		}
+	}()
+
+	sig := <-stop
+	log.WithField("signal", sig.String()).Info("Shutdown signal received")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	log.Info("Shutting down HTTP server gracefully...")
+
+	if err := server.Shutdown(ctx); err != nil {
+		log.Errorf("HTTP server shutdown error: %v", err)
+
+		log.Warn("Forcing server closure...")
+		if err := server.Close(); err != nil {
+			log.Errorf("Failed to force close server: %v", err)
+		}
+	}
+
+	log.Info("HTTP server stopped successfully")
+	log.Info("Application shutdown complete")
 }
