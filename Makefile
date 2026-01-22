@@ -18,3 +18,6 @@ run:
 migrate:
 	@echo "Running migrations..."
 	./$(NAME) --migrate
+
+test:
+	go test ./internal/service/chat/... -v
