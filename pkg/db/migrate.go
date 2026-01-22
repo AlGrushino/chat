@@ -11,16 +11,14 @@ import (
 )
 
 func RunMigrations(log *logrus.Logger, db *sql.DB) error {
-	log.Info("Running database migrations...")
-
-	migrationsDir := "../../migrations"
+	migrationsDir := "/app/migrations"
 
 	if _, err := os.Stat(migrationsDir); os.IsNotExist(err) {
-		if goModRoot := findGoModRoot(); goModRoot != "" {
-			migrationsDir = filepath.Join(goModRoot, "migrations")
-			log.Infof("Found migrations at: %s", migrationsDir)
-		}
+		log.Errorf("Migrations directory not found: %s", migrationsDir)
+		migrationsDir = "./migrations"
 	}
+
+	log.Infof("Applying migrations from: %s", migrationsDir)
 
 	err := goose.SetDialect("postgres")
 	if err != nil {
