@@ -56,5 +56,6 @@ func (r *ChatRepository) Update(ctx context.Context, chat *models.Chat) error {
 }
 
 func (r *ChatRepository) Delete(ctx context.Context, id int) error {
-	return r.db.WithContext(ctx).Delete(&models.Chat{}, id).Error
+	result := r.db.WithContext(ctx).Delete(&models.Chat{}, id)
+	return result.Error
 }

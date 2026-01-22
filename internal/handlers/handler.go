@@ -11,6 +11,7 @@ import (
 
 type Chat interface {
 	CreateChat(w http.ResponseWriter, r *http.Request)
+	DeleteChat(w http.ResponseWriter, r *http.Request)
 }
 
 type Message interface {
@@ -55,6 +56,7 @@ func (h *Handler) InitRoutes() {
 	h.mux.HandleFunc("POST /chats", h.chat.CreateChat)
 	h.mux.HandleFunc("POST /chats/{id}/messages", h.message.AddMessage)
 	h.mux.HandleFunc("GET /chats/{id}", h.message.GetMessages)
+	h.mux.HandleFunc("DELETE /chats/{id}/delete", h.chat.DeleteChat)
 
 	h.log.Info("Routes initialized successfully")
 }

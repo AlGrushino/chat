@@ -3,6 +3,7 @@ package chat
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/AlGrushino/chat/internal/handlers/models"
@@ -73,6 +74,44 @@ func (h *Chat) CreateChat(w http.ResponseWriter, r *http.Request) {
 	if err := encoder.Encode(resp); err != nil {
 		log.WithError(err).Error("Failed to encode response")
 	}
+
+	log.WithField("duration_ms", time.Since(start).Milliseconds()).Info("Request completed")
+}
+
+func (h *Chat) DeleteChat(w http.ResponseWriter, r *http.Request) {
+	start := time.Now()
+	log := h.log.WithFields(
+		logrus.Fields{
+			"method": r.Method,
+			"path":   r.URL.Path,
+			"ip":     r.RemoteAddr,
+		},
+	)
+
+	log.Info("Incoming request")
+
+	if r.Method != http.MethodDelete {
+		log.Warn("Method not allowed")
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	idStr := r.PathValue("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		log.WithError(err).Warn("Invalid chat ID")
+		http.Error(w, "Invalid chat ID", http.StatusBadRequest)
+		return
+	}
+
+	err = h.service.DeleteChat(r.Context(), id)
+	if err != nil {
+		log.WithError(err).Warn("Failed to delete chat")
+		http.Error(w, "Failed to delete chat", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 
 	log.WithField("duration_ms", time.Since(start).Milliseconds()).Info("Request completed")
 }

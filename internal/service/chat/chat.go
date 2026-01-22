@@ -2,6 +2,7 @@ package chat
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/AlGrushino/chat/internal/repository"
 	"github.com/AlGrushino/chat/internal/repository/models"
 	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 type ChatService struct {
@@ -60,4 +62,21 @@ func (s *ChatService) CreateChat(ctx context.Context, title string) (string, err
 
 	s.log.Infof("Chat created successfully (ID: %d, Title: %q)", chat.ID, trimmed)
 	return trimmed, nil
+}
+
+func (s *ChatService) DeleteChat(ctx context.Context, id int) error {
+	_, err := s.repository.Chat.GetByID(ctx, id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("chat does not exist")
+		}
+		return fmt.Errorf("failed to get chat with id: %d", id)
+	}
+
+	err = s.repository.Chat.Delete(ctx, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete chat: %w", err)
+	}
+
+	return nil
 }

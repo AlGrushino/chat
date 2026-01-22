@@ -19,19 +19,19 @@ type Message struct {
 	Text      string    `gorm:"size:5000;not null"`
 	CreatedAt time.Time `gorm:"autoCreateTime"`
 
-	Chat Chat `gorm:"foreignKey:ChatID"`
+	Chat Chat `gorm:"foreignKey:ChatID;constraint:OnDelete:CASCADE;"`
 }
 
 func (c *Chat) BeforeCreate(tx *gorm.DB) (err error) {
-	if len(c.Title) < 3 {
-		return fmt.Errorf("title must be at least 3 characters")
+	if len(c.Title) < 1 {
+		return fmt.Errorf("title must be at least 1 character")
 	}
 	return nil
 }
 
 func (c *Chat) BeforeUpdate(tx *gorm.DB) (err error) {
-	if len(c.Title) < 3 {
-		return fmt.Errorf("title must be at least 3 characters")
+	if len(c.Title) < 1 {
+		return fmt.Errorf("title must be at least 1 characters")
 	}
 	return nil
 }

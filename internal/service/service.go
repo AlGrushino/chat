@@ -11,6 +11,7 @@ import (
 
 type Chat interface {
 	CreateChat(ctx context.Context, title string) (string, error)
+	DeleteChat(ctx context.Context, id int) error
 }
 
 type Message interface {
