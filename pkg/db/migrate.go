@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/pressly/goose/v3"
 	"github.com/sirupsen/logrus"
@@ -47,24 +46,24 @@ func RunMigrations(log *logrus.Logger, db *sql.DB) error {
 	return nil
 }
 
-func findGoModRoot() string {
-	dir, err := os.Getwd()
-	if err != nil {
-		return ""
-	}
+// func findGoModRoot() string {
+// 	dir, err := os.Getwd()
+// 	if err != nil {
+// 		return ""
+// 	}
 
-	for {
-		goModPath := filepath.Join(dir, "go.mod")
-		if _, err := os.Stat(goModPath); err == nil {
-			return dir
-		}
+// 	for {
+// 		goModPath := filepath.Join(dir, "go.mod")
+// 		if _, err := os.Stat(goModPath); err == nil {
+// 			return dir
+// 		}
 
-		parent := filepath.Dir(dir)
-		if parent == dir {
-			break
-		}
-		dir = parent
-	}
+// 		parent := filepath.Dir(dir)
+// 		if parent == dir {
+// 			break
+// 		}
+// 		dir = parent
+// 	}
 
-	return ""
-}
+// 	return ""
+// }

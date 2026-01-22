@@ -8,3 +8,12 @@ type CreateChatReposnse struct {
 	Status string `json:"status"`
 	Title  string `json:"title"`
 }
+
+type CreateMessage struct {
+	Text string `json:"text"`
+}
+
+type CreateMessageResponse struct {
+	Status string `json:"status"`
+	Text   string `json:"text"`
+}
