@@ -1,10 +1,10 @@
 package service
 
 import (
-	"chat/internal/repository"
-	"chat/internal/service/chat"
 	"context"
 
+	"github.com/AlGrushino/chat/internal/repository"
+	"github.com/AlGrushino/chat/internal/service/chat"
 	"github.com/sirupsen/logrus"
 )
 

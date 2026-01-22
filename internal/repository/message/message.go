@@ -1,9 +1,9 @@
 package message
 
 import (
-	"chat/internal/repository/models"
 	"context"
 
+	"github.com/AlGrushino/chat/internal/repository/models"
 	"gorm.io/gorm"
 )
 

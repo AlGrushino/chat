@@ -7,9 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"chat/internal/repository"
-	"chat/internal/repository/models"
-
+	"github.com/AlGrushino/chat/internal/repository"
+	"github.com/AlGrushino/chat/internal/repository/models"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"

@@ -1,12 +1,12 @@
 package chat
 
 import (
-	"chat/internal/handlers/models"
-	"chat/internal/service"
 	"encoding/json"
 	"net/http"
 	"time"
 
+	"github.com/AlGrushino/chat/internal/handlers/models"
+	"github.com/AlGrushino/chat/internal/service"
 	"github.com/sirupsen/logrus"
 )
 

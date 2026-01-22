@@ -1,11 +1,11 @@
 package repository
 
 import (
-	"chat/internal/repository/chat"
-	"chat/internal/repository/message"
-	"chat/internal/repository/models"
 	"context"
 
+	"github.com/AlGrushino/chat/internal/repository/chat"
+	"github.com/AlGrushino/chat/internal/repository/message"
+	"github.com/AlGrushino/chat/internal/repository/models"
 	"gorm.io/gorm"
 )
 

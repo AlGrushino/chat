@@ -1,10 +1,10 @@
 package chat
 
 import (
-	"chat/internal/repository/models"
 	"context"
 	"fmt"
 
+	"github.com/AlGrushino/chat/internal/repository/models"
 	"gorm.io/gorm"
 )
 

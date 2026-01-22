@@ -1,10 +1,6 @@
 package main
 
 import (
-	"chat/internal/handlers"
-	"chat/internal/repository"
-	"chat/internal/service"
-	"chat/pkg/db"
 	"context"
 	"flag"
 	"net/http"
@@ -13,6 +9,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/AlGrushino/chat/internal/handlers"
+	"github.com/AlGrushino/chat/internal/repository"
+	"github.com/AlGrushino/chat/internal/service"
+	"github.com/AlGrushino/chat/pkg/db"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 )

@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"chat/internal/handlers/chat"
-	"chat/internal/service"
 	"net/http"
 
+	"github.com/AlGrushino/chat/internal/handlers/chat"
+	"github.com/AlGrushino/chat/internal/service"
 	"github.com/sirupsen/logrus"
 )
 

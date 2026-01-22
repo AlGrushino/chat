@@ -1,13 +1,13 @@
 package chat
 
 import (
-	"chat/internal/repository"
-	"chat/internal/repository/models"
 	"context"
 	"fmt"
 	"strings"
 	"time"
 
+	"github.com/AlGrushino/chat/internal/repository"
+	"github.com/AlGrushino/chat/internal/repository/models"
 	"github.com/sirupsen/logrus"
 )
 
