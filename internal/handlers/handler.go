@@ -15,6 +15,7 @@ type Chat interface {
 
 type Message interface {
 	AddMessage(w http.ResponseWriter, r *http.Request)
+	GetMessages(w http.ResponseWriter, r *http.Request)
 }
 
 type Handler struct {
@@ -53,6 +54,8 @@ func (h *Handler) InitRoutes() {
 
 	h.mux.HandleFunc("POST /chats", h.chat.CreateChat)
 	h.mux.HandleFunc("POST /chats/{id}/messages", h.message.AddMessage)
+	h.mux.HandleFunc("GET /chats/{id}", h.message.GetMessages)
+
 	h.log.Info("Routes initialized successfully")
 }
 

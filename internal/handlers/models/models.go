@@ -17,3 +17,9 @@ type CreateMessageResponse struct {
 	Status string `json:"status"`
 	Text   string `json:"text"`
 }
+
+type GetMessagesResponse struct {
+	Status   string   `json:"status"`
+	ID       int      `json:"id"`
+	Messages []string `json:"messages"`
+}

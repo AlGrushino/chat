@@ -15,6 +15,7 @@ type Chat interface {
 
 type Message interface {
 	AddMessage(ctx context.Context, id int, text string) (string, error)
+	GetMessages(ctx context.Context, id, limit int) ([]string, error)
 }
 
 type Service struct {
